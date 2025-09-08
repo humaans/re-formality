@@ -26,12 +26,7 @@ let ast
                      ~fieldStatus:[%e field_status_expr]
                      ~submissionStatus:state.submissionStatus
                      ~validator:[%e validator_expr]
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
                | Some () ->
                  [%expr
                    validateFieldOnChangeWithValidatorAndMetadata
@@ -40,21 +35,11 @@ let ast
                      ~fieldStatus:[%e field_status_expr]
                      ~submissionStatus:state.submissionStatus
                      ~validator:[%e validator_expr]
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]])
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]])
             | Ok (Optional None) ->
               [%expr
                 validateFieldOnChangeWithoutValidator
                   ~fieldInput:[%e field_input_expr]
-                  ~setStatus:
-                    [%e
-                      Uncurried.fn
-                        ~loc
-                        ~arity:1
-                        [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]]
+                  ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
       }]
 ;;

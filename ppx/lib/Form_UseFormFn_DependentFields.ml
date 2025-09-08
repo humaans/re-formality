@@ -63,12 +63,7 @@ let ast
                      ~input:nextInput
                      ~fieldStatus:[%e field_status_expr]
                      ~validator:[%e validator_expr]
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
                | Some () ->
                  [%expr
                    validateDependentFieldOnChangeWithMetadata
@@ -76,12 +71,7 @@ let ast
                      ~fieldStatus:[%e field_status_expr]
                      ~validator:[%e validator_expr]
                      ~metadata
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]]
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
            with
            | Some result -> nextFieldsStatuses := result
            | None -> ()]
@@ -97,12 +87,7 @@ let ast
                      ~input:nextInput
                      ~fieldStatus:[%e field_status_expr]
                      ~validator:[%e validator_expr]
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
                | Some () ->
                  [%expr
                    Async.validateDependentFieldOnChangeWithMetadata
@@ -110,12 +95,7 @@ let ast
                      ~fieldStatus:[%e field_status_expr]
                      ~validator:[%e validator_expr]
                      ~metadata
-                     ~setStatus:
-                       [%e
-                         Uncurried.fn
-                           ~loc
-                           ~arity:1
-                           [%expr fun status -> [%e set_status_expr]]] [@res.uapp]]]
+                     ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
            with
            | Some result -> nextFieldsStatuses := result
            | None -> ()])
@@ -145,194 +125,124 @@ let ast
             [%expr
               Belt.Array.forEachWithIndex
                 [%e collection_statuses_expr]
-                [%e
-                  Uncurried.fn
-                    ~loc
-                    ~arity:2
-                    [%expr
-                      fun index' item ->
-                        if index <> index'
-                        then (
-                          match
-                            [%e
-                              match metadata with
-                              | None ->
-                                [%expr
-                                  validateDependentFieldOfCollectionOnChange
-                                    ~input:nextInput
-                                    ~index:index'
-                                    ~fieldStatus:[%e field_status_expr]
-                                    ~validator:[%e validator_expr]
-                                    ~setStatus:
-                                      [%e
-                                        Uncurried.fn
-                                          ~loc
-                                          ~arity:1
-                                          [%expr fun status -> [%e set_status_expr]]]
-                                  [@res.uapp]]
-                              | Some () ->
-                                [%expr
-                                  validateDependentFieldOfCollectionOnChangeWithMetadata
-                                    ~input:nextInput
-                                    ~index:index'
-                                    ~fieldStatus:[%e field_status_expr]
-                                    ~validator:[%e validator_expr]
-                                    ~metadata
-                                    ~setStatus:
-                                      [%e
-                                        Uncurried.fn
-                                          ~loc
-                                          ~arity:1
-                                          [%expr fun status -> [%e set_status_expr]]]
-                                  [@res.uapp]]]
-                          with
-                          | Some result -> nextFieldsStatuses := result
-                          | None -> ())
-                        else ()]] [@res.uapp]]
+                (fun index' item ->
+                  if index <> index'
+                  then (
+                    match
+                      [%e
+                        match metadata with
+                        | None ->
+                          [%expr
+                            validateDependentFieldOfCollectionOnChange
+                              ~input:nextInput
+                              ~index:index'
+                              ~fieldStatus:[%e field_status_expr]
+                              ~validator:[%e validator_expr]
+                              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
+                        | Some () ->
+                          [%expr
+                            validateDependentFieldOfCollectionOnChangeWithMetadata
+                              ~input:nextInput
+                              ~index:index'
+                              ~fieldStatus:[%e field_status_expr]
+                              ~validator:[%e validator_expr]
+                              ~metadata
+                              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
+                    with
+                    | Some result -> nextFieldsStatuses := result
+                    | None -> ())
+                  else ())]
           | SyncValidator (Ok (Optional None)) -> [%expr ()]
           | AsyncValidator { mode = OnChange | OnBlur } ->
             [%expr
               Belt.Array.forEachWithIndex
                 [%e collection_statuses_expr]
-                [%e
-                  Uncurried.fn
-                    ~loc
-                    ~arity:2
-                    [%expr
-                      fun index' item ->
-                        if index <> index'
-                        then (
-                          match
-                            [%e
-                              match metadata with
-                              | None ->
-                                [%expr
-                                  Async.validateDependentFieldOfCollectionOnChange
-                                    ~input:nextInput
-                                    ~index:index'
-                                    ~fieldStatus:[%e field_status_expr]
-                                    ~validator:[%e validator_expr]
-                                    ~setStatus:
-                                      [%e
-                                        Uncurried.fn
-                                          ~loc
-                                          ~arity:1
-                                          [%expr fun status -> [%e set_status_expr]]]
-                                  [@res.uapp]]
-                              | Some () ->
-                                [%expr
-                                  Async
-                                  .validateDependentFieldOfCollectionOnChangeWithMetadata
-                                    ~input:nextInput
-                                    ~index:index'
-                                    ~fieldStatus:[%e field_status_expr]
-                                    ~validator:[%e validator_expr]
-                                    ~metadata
-                                    ~setStatus:
-                                      [%e
-                                        Uncurried.fn
-                                          ~loc
-                                          ~arity:1
-                                          [%expr fun status -> [%e set_status_expr]]]
-                                  [@res.uapp]]]
-                          with
-                          | Some result -> nextFieldsStatuses := result
-                          | None -> ())
-                        else ()]] [@res.uapp]])
+                (fun index' item ->
+                  if index <> index'
+                  then (
+                    match
+                      [%e
+                        match metadata with
+                        | None ->
+                          [%expr
+                            Async.validateDependentFieldOfCollectionOnChange
+                              ~input:nextInput
+                              ~index:index'
+                              ~fieldStatus:[%e field_status_expr]
+                              ~validator:[%e validator_expr]
+                              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
+                        | Some () ->
+                          [%expr
+                            Async.validateDependentFieldOfCollectionOnChangeWithMetadata
+                              ~input:nextInput
+                              ~index:index'
+                              ~fieldStatus:[%e field_status_expr]
+                              ~validator:[%e validator_expr]
+                              ~metadata
+                              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
+                    with
+                    | Some result -> nextFieldsStatuses := result
+                    | None -> ())
+                  else ())])
        | `Field _ | `Collection _ | `FieldOfCollection (_, _) ->
          (match field.validator with
           | SyncValidator (Ok (Required | Optional (Some _)) | Error ()) ->
             [%expr
               Belt.Array.forEachWithIndex
                 [%e collection_statuses_expr]
-                [%e
-                  Uncurried.fn
-                    ~loc
-                    ~arity:2
-                    [%expr
-                      fun index' item ->
-                        match
-                          [%e
-                            match metadata with
-                            | None ->
-                              [%expr
-                                validateDependentFieldOfCollectionOnChange
-                                  ~input:nextInput
-                                  ~index:index'
-                                  ~fieldStatus:[%e field_status_expr]
-                                  ~validator:[%e validator_expr]
-                                  ~setStatus:
-                                    [%e
-                                      Uncurried.fn
-                                        ~loc
-                                        ~arity:1
-                                        [%expr fun status -> [%e set_status_expr]]]
-                                [@res.uapp]]
-                            | Some () ->
-                              [%expr
-                                validateDependentFieldOfCollectionOnChangeWithMetadata
-                                  ~input:nextInput
-                                  ~index:index'
-                                  ~fieldStatus:[%e field_status_expr]
-                                  ~validator:[%e validator_expr]
-                                  ~metadata
-                                  ~setStatus:
-                                    [%e
-                                      Uncurried.fn
-                                        ~loc
-                                        ~arity:1
-                                        [%expr fun status -> [%e set_status_expr]]]
-                                [@res.uapp]]]
-                        with
-                        | Some result -> nextFieldsStatuses := result
-                        | None -> ()]] [@res.uapp]]
+                (fun index' item ->
+                  match
+                    [%e
+                      match metadata with
+                      | None ->
+                        [%expr
+                          validateDependentFieldOfCollectionOnChange
+                            ~input:nextInput
+                            ~index:index'
+                            ~fieldStatus:[%e field_status_expr]
+                            ~validator:[%e validator_expr]
+                            ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
+                      | Some () ->
+                        [%expr
+                          validateDependentFieldOfCollectionOnChangeWithMetadata
+                            ~input:nextInput
+                            ~index:index'
+                            ~fieldStatus:[%e field_status_expr]
+                            ~validator:[%e validator_expr]
+                            ~metadata
+                            ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
+                  with
+                  | Some result -> nextFieldsStatuses := result
+                  | None -> ())]
           | SyncValidator (Ok (Optional None)) -> [%expr ()]
           | AsyncValidator { mode = OnChange | OnBlur } ->
             [%expr
               Belt.Array.forEachWithIndex
                 [%e collection_statuses_expr]
-                [%e
-                  Uncurried.fn
-                    ~loc
-                    ~arity:2
-                    [%expr
-                      fun index' item ->
-                        match
-                          [%e
-                            match metadata with
-                            | None ->
-                              [%expr
-                                Async.validateDependentFieldOfCollectionOnChange
-                                  ~input:nextInput
-                                  ~index:index'
-                                  ~fieldStatus:[%e field_status_expr]
-                                  ~validator:[%e validator_expr]
-                                  ~setStatus:
-                                    [%e
-                                      Uncurried.fn
-                                        ~loc
-                                        ~arity:1
-                                        [%expr fun status -> [%e set_status_expr]]]
-                                [@res.uapp]]
-                            | Some () ->
-                              [%expr
-                                Async
-                                .validateDependentFieldOfCollectionOnChangeWithMetadata
-                                  ~input:nextInput
-                                  ~index:index'
-                                  ~fieldStatus:[%e field_status_expr]
-                                  ~validator:[%e validator_expr]
-                                  ~metadata
-                                  ~setStatus:
-                                    [%e
-                                      Uncurried.fn
-                                        ~loc
-                                        ~arity:1
-                                        [%expr fun status -> [%e set_status_expr]]]
-                                [@res.uapp]]]
-                        with
-                        | Some result -> nextFieldsStatuses := result
-                        | None -> ()]] [@res.uapp]]))
+                (fun index' item ->
+                  match
+                    [%e
+                      match metadata with
+                      | None ->
+                        [%expr
+                          Async.validateDependentFieldOfCollectionOnChange
+                            ~input:nextInput
+                            ~index:index'
+                            ~fieldStatus:[%e field_status_expr]
+                            ~validator:[%e validator_expr]
+                            ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
+                      | Some () ->
+                        [%expr
+                          Async.validateDependentFieldOfCollectionOnChangeWithMetadata
+                            ~input:nextInput
+                            ~index:index'
+                            ~fieldStatus:[%e field_status_expr]
+                            ~validator:[%e validator_expr]
+                            ~metadata
+                            ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
+                  with
+                  | Some result -> nextFieldsStatuses := result
+                  | None -> ())]))
   in
   deps |> E.seq ~exp:(dep |> validate_dep) ~make:validate_dep
 ;;

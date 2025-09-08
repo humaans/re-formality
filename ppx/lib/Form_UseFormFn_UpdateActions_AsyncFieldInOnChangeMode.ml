@@ -22,9 +22,7 @@ let ast
               ~fieldStatus:[%e field_status_expr]
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | None, Some OptionType ->
           [%expr
             Async.validateFieldOfOptionTypeOnChangeInOnChangeMode
@@ -32,9 +30,7 @@ let ast
               ~fieldStatus:[%e field_status_expr]
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | None, Some StringType ->
           [%expr
             Async.validateFieldOfStringTypeOnChangeInOnChangeMode
@@ -42,9 +38,7 @@ let ast
               ~fieldStatus:[%e field_status_expr]
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | None, Some OptionStringType ->
           [%expr
             Async.validateFieldOfOptionStringTypeOnChangeInOnChangeMode
@@ -52,9 +46,7 @@ let ast
               ~fieldStatus:[%e field_status_expr]
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | Some (), None ->
           [%expr
             Async.validateFieldOnChangeInOnChangeModeWithMetadata
@@ -63,9 +55,7 @@ let ast
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
               ~metadata
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | Some (), Some OptionType ->
           [%expr
             Async.validateFieldOfOptionTypeOnChangeInOnChangeModeWithMetadata
@@ -74,9 +64,7 @@ let ast
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
               ~metadata
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | Some (), Some StringType ->
           [%expr
             Async.validateFieldOfStringTypeOnChangeInOnChangeModeWithMetadata
@@ -85,9 +73,7 @@ let ast
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
               ~metadata
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]
         | Some (), Some OptionStringType ->
           [%expr
             Async.validateFieldOfOptionStringTypeOnChangeInOnChangeModeWithMetadata
@@ -96,31 +82,24 @@ let ast
               ~submissionStatus:state.submissionStatus
               ~validator:[%e validator_expr]
               ~metadata
-              ~setStatus:
-                [%e Uncurried.fn ~loc ~arity:1 [%expr fun status -> [%e set_status_expr]]]
-            [@res.uapp]]]
+              ~setStatus:[%e [%expr fun status -> [%e set_status_expr]]]]]
     in
     match [%e field.name |> E.field ~in_:"nextFieldsStatuses" ~loc] with
     | Validating value ->
       UpdateWithSideEffects
         ( { state with input = nextInput; fieldsStatuses = nextFieldsStatuses }
-        , [%e
-            Uncurried.fn
-              ~loc
-              ~arity:1
-              [%expr
-                fun { state = _; dispatch } ->
-                  [%e
-                    E.apply_field2
-                      ~in_:("validators", field.name)
-                      ~fn:"validateAsync"
-                      ~args:
-                        [ ( Nolabel
-                          , match metadata with
-                            | None -> [%expr value, dispatch]
-                            | Some () -> [%expr value, metadata, dispatch] )
-                        ]
-                      ~loc]]] )
+        , fun { state = _; dispatch } ->
+            [%e
+              E.apply_field2
+                ~in_:("validators", field.name)
+                ~fn:"validateAsync"
+                ~args:
+                  [ ( Nolabel
+                    , match metadata with
+                      | None -> [%expr value, dispatch]
+                      | Some () -> [%expr value, metadata, dispatch] )
+                  ]
+                ~loc] )
     | Pristine | Dirty (_, (Shown | Hidden)) ->
       Update { state with input = nextInput; fieldsStatuses = nextFieldsStatuses }]
 ;;

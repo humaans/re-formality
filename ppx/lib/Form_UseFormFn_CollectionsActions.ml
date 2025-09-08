@@ -31,7 +31,7 @@ let ast ~loc ~(metadata : unit option) (scheme : Scheme.t) =
                   [%expr
                     Belt.Array.concat
                       [%e collection.plural |> E.field2 ~in_:("state", "input") ~loc]
-                      [| entry |] [@res.uapp]]
+                      [| entry |]]
                 ~loc
          in
          let add_entry_to_fields_statuses_exp =
@@ -51,7 +51,7 @@ let ast ~loc ~(metadata : unit option) (scheme : Scheme.t) =
                               |> List.rev_map (fun (field : Scheme.field) ->
                                 Lident field.name |> lid ~loc, [%expr Pristine]))
                              None]
-                      |] [@res.uapp]]
+                      |]]
                 ~loc
          in
          let remove_action_pat =
@@ -68,8 +68,7 @@ let ast ~loc ~(metadata : unit option) (scheme : Scheme.t) =
                   [%expr
                     Belt.Array.keepWithIndex
                       [%e collection.plural |> E.field2 ~in_:("state", "input") ~loc]
-                      [%e Uncurried.fn ~loc ~arity:2 [%expr fun _ i -> i <> index]]
-                    [@res.uapp]]
+                      (fun _ i -> i <> index)]
                 ~loc
          in
          let remove_entry_from_fields_statuses_exp =
@@ -82,8 +81,7 @@ let ast ~loc ~(metadata : unit option) (scheme : Scheme.t) =
                       [%e
                         collection.plural
                         |> E.field2 ~in_:("state", "fieldsStatuses") ~loc]
-                      [%e Uncurried.fn ~loc ~arity:2 [%expr fun _ i -> i <> index]]
-                    [@res.uapp]]
+                      (fun _ i -> i <> index)]
                 ~loc
          in
          let update_collections_statuses =
