@@ -1,9 +1,10 @@
 {
-    "name": "re-formality",
-    "version": "4.0.0-beta.21",
+    "name": "@humaans/re-formality",
+    "version": "4.0.0",
     "description": "Form validation tool for @rescript/react",
     "author": "Alex Fedoseev <alex@35mil.me>",
     "license": "MIT",
+    "private": true,
     "repository": {
         "type": "git",
         "url": "https://github.com/MinimaHQ/re-formality.git"
@@ -25,5 +26,4 @@
         "forms",
         "validation"
     ],
-    "private": true
 }
